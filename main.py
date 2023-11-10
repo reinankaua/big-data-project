@@ -1,73 +1,40 @@
+import datetime
+import dateparser
 import pandas as pd
 
 df = pd.read_excel("dados.xlsx", sheet_name="Vítimas")
 
+estados_norte = ["Amazonas", "Pará", "Roraima", "Amapá", "Rondônia", "Acre", "Tocantins"]
+estados_nordeste = ["Piauí", "Maranhão", "Pernambuco", "Rio Grande do Norte", "Paraíba", "Ceará", "Bahia", "Alagoas", "Sergipe"]
+estados_centro_oeste = ["Mato Grosso", "Mato Grosso do Sul", "Goiás", "Distrito Federal"]
+estados_sudeste = ["São Paulo", "Rio de Janeiro", "Espírito Santo", "Minas Gerais"]
+estados_sul = ["Rio Grande do Sul", "Paraná", "Santa Catarina"]
+
 for index, row in df.iterrows():
-    match row['UF']:
-        case "Amazonas":
-            df.loc[index, 'Região'] = "Norte"
-        case "Pará":
-            df.loc[index, 'Região'] = "Norte"
-        case "Roraima":
-            df.loc[index, 'Região'] = "Norte"
-        case "Amapá":
-            df.loc[index, 'Região'] = "Norte"
-        case "Rondônia":
-            df.loc[index, 'Região'] = "Norte"
-        case "Acre":
-            df.loc[index, 'Região'] = "Norte"
-        case "Tocantins":
-            df.loc[index, 'Região'] = "Norte"
+    if row['UF'] in estados_norte:
+        df.loc[index, 'Região'] = "Norte"
+    elif row['UF'] in estados_nordeste:
+        df.loc[index, 'Região'] = "Nordeste"
+    elif row['UF'] in estados_centro_oeste:
+        df.loc[index, 'Região'] = "Centro Oeste"
+    elif row['UF'] in estados_sudeste:
+        df.loc[index, 'Região'] = "Sudeste"
+    elif row['UF'] in estados_sul:
+        df.loc[index, 'Região'] = "Sul"
 
-        case "Piauí":
-            df.loc[index, 'Região'] = "Nordeste"
-        case "Maranhão":
-            df.loc[index, 'Região'] = "Nordeste"
-        case "Pernambuco":
-            df.loc[index, 'Região'] = "Nordeste"
-        case "Rio Grande do Norte":
-            df.loc[index, 'Região'] = "Nordeste"
-        case "Paraíba":
-            df.loc[index, 'Região'] = "Nordeste"
-        case "Ceará":
-            df.loc[index, 'Região'] = "Nordeste"
-        case "Bahia":
-            df.loc[index, 'Região'] = "Nordeste"
-        case "Alagoas":
-            df.loc[index, 'Região'] = "Nordeste"
-        case "Sergipe":
-            df.loc[index, 'Região'] = "Nordeste"
+    else:
+        df.loc[index, 'Região'] = "NaN"
 
-        case "Mato Grosso":
-            df.loc[index, 'Região'] = "Centro-Oeste"
-        case "Mato Grosso do Sul":
-            df.loc[index, 'Região'] = "Centro-Oeste"
-        case "Goiás":
-            df.loc[index, 'Região'] = "Centro-Oeste"
-        case "Distrito Federal":
-            df.loc[index, 'Região'] = "Centro-Oeste"
+def converter_mes_para_numero(mes):
+  return dateparser.parse(mes, languages=['pt']).month
 
-        case "São Paulo":
-            df.loc[index, 'Região'] = "Sudeste"
-        case "Rio de Janeiro":
-            df.loc[index, 'Região'] = "Sudeste"
-        case "Espírito Santo":
-            df.loc[index, 'Região'] = "Sudeste"
-        case "Minas Gerais":
-            df.loc[index, 'Região'] = "Sudeste"
-
-        case "Rio Grande do Sul":
-            df.loc[index, 'Região'] = "Sul"
-        case "Paraná":
-            df.loc[index, 'Região'] = "Sul"
-        case "Santa Catarina":
-            df.loc[index, 'Região'] = "Sul"
-
-        case _:
-             "NaN"
+# df['mes_numerico'] = df['Mês'].apply(lambda mes: datetime.datetime.strptime(mes, '%b').month)
+df['mes_numerico'] = df['Mês'].apply(converter_mes_para_numero)
+df['data_completa'] = df['mes_numerico'].astype('str') + '-' + df['Ano'].astype('str')
 
 df_homicidios = df[df['Tipo Crime'] == 'Homicídio doloso']
 
+print(df_homicidios)
 df_homicidios.to_excel('dados-tratados.xlsx')
 print('Planilha crianda com sucesso.')
 
