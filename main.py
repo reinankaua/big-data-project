@@ -1,4 +1,3 @@
-import datetime
 import dateparser
 import pandas as pd
 
@@ -25,16 +24,15 @@ for index, row in df.iterrows():
     else:
         df.loc[index, 'Região'] = "NaN"
 
-def converter_mes_para_numero(mes):
-  return dateparser.parse(mes, languages=['pt']).month
 
-# df['mes_numerico'] = df['Mês'].apply(lambda mes: datetime.datetime.strptime(mes, '%b').month)
+def converter_mes_para_numero(mes):
+    return dateparser.parse(mes, languages=['pt']).month
+
+
 df['mes_numerico'] = df['Mês'].apply(converter_mes_para_numero)
 df['data_completa'] = df['mes_numerico'].astype('str') + '-' + df['Ano'].astype('str')
 
 df_homicidios = df[df['Tipo Crime'] == 'Homicídio doloso']
 
-print(df_homicidios)
 df_homicidios.to_excel('dados-tratados.xlsx')
 print('Planilha crianda com sucesso.')
-
